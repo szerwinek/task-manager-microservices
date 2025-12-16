@@ -4,9 +4,9 @@ services:
   auth-service:
     build: ./auth-service
     ports:
-      - "8001:8000"
+      - "8001:8080"
 
   tasks-service:
     build: ./tasks-service
     ports:
-      - "8002:8000"
+      - "8002:8080"
