@@ -5,19 +5,11 @@ Django settings for auth_service project.
 from pathlib import Path
 import os
 
-# --------------------------------------------------
-# Paths
-# --------------------------------------------------
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# --------------------------------------------------
-# Security
-# --------------------------------------------------
+# SECURITY
 SECRET_KEY = 'django-insecure--@%@^&$_y0f7d7_j5$s1jm8czd(*l*c0!%oji9k4=10&ype_8q'
-
-# UWAGA:
-# Lokalnie True, w Cloud Run nadal działa (projekt zaliczeniowy)
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -26,19 +18,7 @@ ALLOWED_HOSTS = [
     ".run.app",
 ]
 
-# 🔐 CSRF – WYMAGANE DLA CLOUD RUN
-CSRF_TRUSTED_ORIGINS = [
-    "https://auth-service-468382717388.europe-central2.run.app",
-    "https://*.run.app",
-]
-
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-
-
-# --------------------------------------------------
-# Applications
-# --------------------------------------------------
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,13 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'users',
+
+    # ⬇⬇⬇ TO JEST KLUCZOWA ZMIANA ⬇⬇⬇
+    'users.apps.UsersConfig',
 ]
 
-
-# --------------------------------------------------
-# Middleware
-# --------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -65,18 +43,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-# --------------------------------------------------
-# URLs / WSGI
-# --------------------------------------------------
 ROOT_URLCONF = 'auth_service.urls'
 
-WSGI_APPLICATION = 'auth_service.wsgi.application'
-
-
-# --------------------------------------------------
-# Templates
-# --------------------------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -92,10 +60,9 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'auth_service.wsgi.application'
 
-# --------------------------------------------------
-# Database (SQLite – demo / zaliczenie)
-# --------------------------------------------------
+# Database (SQLite – demo / Cloud Run OK)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -103,10 +70,7 @@ DATABASES = {
     }
 }
 
-
-# --------------------------------------------------
 # Password validation
-# --------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -114,39 +78,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# --------------------------------------------------
 # Internationalization
-# --------------------------------------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
-# --------------------------------------------------
 # Static files
-# --------------------------------------------------
 STATIC_URL = 'static/'
 
-
-# --------------------------------------------------
-# Default PK
-# --------------------------------------------------
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# ==================================================
-# AUTOMATYCZNE TWORZENIE ADMINA (CLOUD RUN / DEMO)
-# ==================================================
-if os.environ.get("CREATE_SUPERUSER") == "true":
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser(
-            username="admin",
-            email="admin@example.com",
-            password="admin123"
-        )
-
