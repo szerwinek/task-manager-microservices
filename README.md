@@ -1,65 +1,89 @@
-# Task Manager – Microservices (Google Cloud Run)
+Task Manager – Microservices (Google Cloud Run)
+Opis projektu
 
-## Opis projektu
-Projekt przedstawia prostą aplikację typu **Task Manager**, zrealizowaną
-w architekturze **mikroserwisowej**. System składa się z dwóch niezależnych
+Projekt przedstawia prostą aplikację Task Manager, zrealizowaną
+w architekturze mikroserwisowej. System składa się z dwóch niezależnych
 mikroserwisów, które komunikują się ze sobą za pomocą REST API.
 
 Celem projektu jest zaprezentowanie:
-- architektury mikroserwisowej,
-- konteneryzacji aplikacji (Docker),
-- wdrożenia aplikacji do chmury **Google Cloud Run**,
-- komunikacji pomiędzy mikroserwisami.
 
-Projekt został wykonany w ramach przedmiotu **Chmury obliczeniowe**.
+architektury mikroserwisowej,
 
----
+konteneryzacji aplikacji (Docker),
 
-## Architektura systemu
+wdrożenia aplikacji do chmury Google Cloud Run,
+
+komunikacji pomiędzy mikroserwisami,
+
+podstawowej obsługi uwierzytelniania w Django.
+
+Projekt został wykonany w ramach przedmiotu Chmury obliczeniowe.
+
+Architektura systemu
 
 System składa się z dwóch mikroserwisów:
 
-### Auth Service
-Mikroserwis odpowiedzialny za:
-- obsługę uwierzytelniania,
-- panel administracyjny Django,
-- udostępnienie endpointu testowego.
+Auth Service
 
-### Tasks Service
 Mikroserwis odpowiedzialny za:
-- zarządzanie listą zadań,
-- udostępnienie REST API,
-- komunikację z mikroserwisem Auth Service.
+
+obsługę uwierzytelniania,
+
+panel administracyjny Django,
+
+udostępnienie endpointów REST API,
+
+demonstrację mechanizmu logowania.
+
+Tasks Service
+
+Mikroserwis odpowiedzialny za:
+
+zarządzanie listą zadań,
+
+udostępnienie REST API,
+
+test komunikacji z mikroserwisem Auth Service.
 
 Każdy mikroserwis:
-- działa w osobnym kontenerze Docker,
-- jest wdrażany jako niezależna usługa w Google Cloud Run.
 
----
+działa w osobnym kontenerze Docker,
 
-## Technologie
-- Python 3.11
-- Django
-- Django REST Framework
-- Docker
-- Google Cloud Build
-- Google Cloud Run
+jest wdrażany jako niezależna usługa w Google Cloud Run.
 
----
+Technologie
 
-## Uruchomienie lokalne (Docker)
+Python 3.11
 
-### Wymagania
-- Docker
-- Docker Compose
+Django
 
-### Instrukcja uruchomienia
-W katalogu głównym projektu należy wykonać polecenie:
+Django REST Framework
 
-```bash
+Gunicorn
+
+Docker
+
+Docker Compose
+
+Google Cloud Build
+
+Google Cloud Run
+
+Uruchomienie lokalne (Docker)
+Wymagania
+
+Docker
+
+Docker Compose
+
+Instrukcja uruchomienia
+
+W katalogu głównym projektu wykonaj:
+
 docker compose up --build
 
-Po uruchomieniu aplikacji:
+
+Po uruchomieniu aplikacji dostępne są:
 
 Auth Service: http://localhost:8001
 
@@ -68,8 +92,8 @@ Tasks Service: http://localhost:8002
 Wdrożenie do chmury (Google Cloud Run)
 
 Projekt został wdrożony do chmury Google Cloud z wykorzystaniem usługi
-Google Cloud Run, która umożliwia uruchamianie kontenerów bez konieczności
-zarządzania infrastrukturą serwerową.
+Google Cloud Run, umożliwiającej uruchamianie kontenerów bez zarządzania
+infrastrukturą serwerową.
 
 Auth Service
 
@@ -100,14 +124,19 @@ Dostępne endpointy:
 Obsługa aplikacji
 
 Aplikacja nie posiada interfejsu graficznego (frontend).
-Obsługa odbywa się poprzez przeglądarkę internetową oraz REST API.
+Obsługa odbywa się poprzez:
 
-1. Auth Service – panel administracyjny
+przeglądarkę internetową (panel admina Django),
 
-Auth Service udostępnia panel administracyjny Django, który służy do
-zarządzania danymi aplikacji oraz celów demonstracyjnych.
+REST API.
+
+Auth Service – panel administracyjny
+
+Auth Service udostępnia panel administracyjny Django przeznaczony
+do celów administracyjnych i demonstracyjnych.
 
 Dostęp:
+
 /admin/
 
 
@@ -120,14 +149,50 @@ Po wejściu na stronę użytkownik może:
 
 zalogować się do panelu administratora,
 
-zarządzać danymi systemowymi,
+przeglądać modele Django,
 
-przeglądać konfigurację aplikacji.
+zarządzać danymi aplikacji.
 
-2. Tasks Service – zarządzanie zadaniami (REST API)
+Użytkownicy i logowanie
+🔐 Rejestracja użytkowników
 
-Tasks Service udostępnia REST API umożliwiające pobieranie listy zadań.
+Aplikacja nie udostępnia publicznej rejestracji użytkowników.
 
+Jest to świadoma decyzja projektowa, ponieważ celem projektu jest:
+
+demonstracja architektury mikroserwisowej,
+
+konteneryzacja i wdrożenie do chmury,
+
+komunikacja REST API.
+
+👤 Tworzenie konta administratora (superuser)
+
+Konto administratora tworzone jest ręcznie za pomocą mechanizmu Django.
+
+Lokalnie
+cd auth-service
+python manage.py createsuperuser
+
+
+Po utworzeniu konta możliwe jest logowanie do panelu admina:
+
+http://127.0.0.1:8000/admin/
+
+W chmurze (Google Cloud Run)
+
+Wersja chmurowa aplikacji nie posiada publicznej rejestracji ani
+automatycznego tworzenia użytkowników.
+
+Panel admina dostępny jest wyłącznie do:
+
+celów demonstracyjnych,
+
+prezentacji działania kontenera,
+
+sprawdzenia poprawności działania usługi.
+
+Tasks Service – REST API
 Lista zadań
 
 Endpoint:
@@ -143,11 +208,12 @@ https://tasks-service-468382717388.europe-central2.run.app/api/tasks/
 Po wywołaniu endpointu użytkownik otrzymuje listę przykładowych zadań
 w formacie JSON.
 
-3. Test komunikacji mikroserwisów
+Test komunikacji mikroserwisów
 
 Tasks Service komunikuje się z Auth Service poprzez REST API.
 
 Endpoint testowy:
+
 /api/auth-test/
 
 
@@ -175,15 +241,3 @@ curl https://tasks-service-468382717388.europe-central2.run.app/api/tasks/
 
 Test komunikacji mikroserwisów
 curl https://tasks-service-468382717388.europe-central2.run.app/api/auth-test/
-
-Podsumowanie
-
-Projekt spełnia założenia architektury mikroserwisowej:
-
-mikroserwisy są niezależne,
-
-aplikacja została skonteneryzowana,
-
-usługi zostały wdrożone do chmury Google Cloud Run,
-
-komunikacja pomiędzy mikroserwisami odbywa się przez REST API.

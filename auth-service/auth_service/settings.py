@@ -3,7 +3,6 @@ Django settings for auth_service project.
 """
 
 from pathlib import Path
-import os
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
